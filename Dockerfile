@@ -61,6 +61,8 @@ COPY start.sh /home/hadoop/start.sh
 
 # Make startup script executable
 RUN chmod +x /home/hadoop/start.sh
+RUN chown hadoop:hadoop /home/hadoop/start.sh
+
 
 # Entry point to start Hadoop and related services
 USER hadoop

@@ -10,8 +10,8 @@ services:
     hostname: master1
     container_name: master1
     ports:
-      - "8888:8088"    # YARN ResourceManager UI
-      - "9878:9870"    # HDFS NameNode UI
+      - "8888:8088"
+      - "9878:9870"
     networks:
       - hadoopnet
     volumes:
