@@ -1,17 +1,27 @@
-# ================================
-# Docker Compose for Hadoop HA Cluster
-# ================================
-version: '3.8'
-
 services:
+  hive-postgres:
+    image: postgres:13
+    hostname: hive-postgres
+    container_name: hive-postgres
+    environment:
+      POSTGRES_USER: hiveuser
+      POSTGRES_PASSWORD: hivepassword
+      POSTGRES_DB: metastore
+    networks:
+      - hadoopnet
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+
+  # Hadoop Master Node 1 (Active NameNode)
   master1:
     build:
       context: .
     hostname: master1
     container_name: master1
     ports:
-      - "8888:8088"
-      - "9878:9870"
+      - "8888:8088"  # YARN ResourceManager UI
+      - "9878:9870"  # HDFS NameNode UI
     networks:
       - hadoopnet
     volumes:
@@ -19,6 +29,8 @@ services:
       - jk1:/usr/local/hadoop/journal
       - hdfs-nn1:/usr/local/hadoop/hdfs/namenode
 
+
+  # Hadoop Master Node 2 (Standby NameNode)
   master2:
     build:
       context: .
@@ -34,6 +46,8 @@ services:
       - jk2:/usr/local/hadoop/journal
       - hdfs-nn2:/usr/local/hadoop/hdfs/namenode
 
+
+  # Hadoop Master Node 3 (Standby NameNode)
   master3:
     build:
       context: .
@@ -49,6 +63,8 @@ services:
       - jk3:/usr/local/hadoop/journal
       - hdfs-nn3:/usr/local/hadoop/hdfs/namenode
 
+
+  # Hadoop Worker Node
   worker:
     build:
       context: .
@@ -58,6 +74,18 @@ services:
       - hadoopnet
     volumes:
       - hdfs-dn1:/usr/local/hadoop/hdfs/datanode
+
+
+  # Hive Metastore
+  hive:
+    build: .
+    hostname: hive
+    container_name: hive
+    ports:
+      - "10000:10000"
+    networks:
+      - hadoopnet
+
 
 networks:
   hadoopnet:
@@ -74,7 +102,6 @@ volumes:
   hdfs-nn2:
   hdfs-nn3:
   hdfs-dn1:
-
-
-
-
+  hive-metastore-db:
+  hive-warehouse:
+  postgres-data:

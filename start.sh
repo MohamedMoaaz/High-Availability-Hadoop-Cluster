@@ -46,14 +46,25 @@ if hostname | grep -q "master"; then
   yarn --daemon start resourcemanager
 
   start-all.sh
-else 
+elif [[ $HOSTNAME == "worker" ]]; then 
+  sleep 30
   echo "[INFO] Detected worker node: $(hostname)"
   echo "[INFO] Starting DataNode on $(hostname)..."
   hdfs --daemon start datanode
 
   echo "[INFO] Starting NodeManager on $(hostname)..."
   yarn --daemon start nodemanager
+elif [[ $HOSTNAME == "hive" ]]; then
+sleep 60
+  echo "Starting Hive services on $HOSTNAME"
+  hdfs dfs -mkdir -p /user/hive/warehouse
+  hdfs dfs -mkdir -p /tmp/hive
+  hdfs dfs -chmod g+w /user/hive/warehouse
+  hdfs dfs -chmod g+w /tmp/hive
+
+  $HIVE_HOME/bin/schematool -initSchema -dbType postgres
+  $HIVE_HOME/bin/hive --service metastore > $HIVE_HOME/metastore.log 2>&1 &
+  $HIVE_HOME/bin/hiveserver2 > $HIVE_HOME/hiveserver2.log 2>&1 &
 fi
 
-echo "[INFO] Container started and running."
 sleep infinity
