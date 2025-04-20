@@ -54,7 +54,7 @@ elif [[ $HOSTNAME == "worker" ]]; then
 
   echo "[INFO] Starting NodeManager on $(hostname)..."
   yarn --daemon start nodemanager
-elif [[ $HOSTNAME == "hive" ]]; then
+elif [[ $HOSTNAME == "hive-metastore" ]]; then
 sleep 60
   echo "Starting Hive services on $HOSTNAME"
   hdfs dfs -mkdir -p /user/hive/warehouse
@@ -63,8 +63,11 @@ sleep 60
   hdfs dfs -chmod g+w /tmp/hive
 
   $HIVE_HOME/bin/schematool -initSchema -dbType postgres
-  $HIVE_HOME/bin/hive --service metastore > $HIVE_HOME/metastore.log 2>&1 &
-  $HIVE_HOME/bin/hiveserver2 > $HIVE_HOME/hiveserver2.log 2>&1 &
+  $HIVE_HOME/bin/hive --service metastore &
+elif [[ $HOSTNAME == "hive-server2" ]]; then
+  sleep 90
+  echo "Starting Hive services on $HOSTNAME"
+  hiveserver2 &
 fi
 
 sleep infinity
