@@ -22,4 +22,4 @@ elif [[ $HOSTNAME == "worker" ]]; then
   hdfs --daemon start datanode
   yarn --daemon start nodemanager
 fi
-sleep infinity
+tail -f /dev/null

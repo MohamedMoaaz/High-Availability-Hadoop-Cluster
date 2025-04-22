@@ -74,41 +74,62 @@ services:
         condition: service_healthy
       master3:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f DataNode && pgrep -f NodeManager"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # hive-postgres:
-  #   image: postgres:13
-  #   hostname: hive-postgres
-  #   container_name: hive-postgres
-  #   environment:
-  #     POSTGRES_USER: hiveuser
-  #     POSTGRES_PASSWORD: hivepassword
-  #     POSTGRES_DB: metastore
-  #   networks:
-  #     - hadoopnet
-  #   volumes:
-  #     - postgres-data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
+  hive-postgres:
+    image: postgres:13
+    hostname: hive-postgres
+    container_name: hive-postgres
+    environment:
+      POSTGRES_USER: hiveuser
+      POSTGRES_PASSWORD: hivepassword
+      POSTGRES_DB: metastore
+    networks:
+      - hadoopnet
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hiveuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # hive-metastore:
-  #   build: .
-  #   hostname: hive-metastore
-  #   container_name: hive-metastore
-  #   depends_on:
-  #     - hive-postgres
-  #   networks:
-  #     - hadoopnet
+  hive-metastore:
+    build: .
+    image: hive-base
+    hostname: hive-metastore
+    container_name: hive-metastore
+    networks:
+      - hadoopnet
+    # healthcheck:
+    #   test: ["CMD-SHELL", "nc -z localhost 9083"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    depends_on:
+      hive-postgres:
+        condition: service_healthy
+      master1:
+        condition: service_healthy
 
-  # hive-server2:
-  #   build: .
-  #   hostname: hive-server2
-  #   container_name: hive-server2
-  #   depends_on:
-  #     - hive-metastore
-  #   ports:
-  #     - "10000:10000"
-  #   networks:
-  #     - hadoopnet
+  hive-server2:
+    build: .
+    image: hive-base
+    hostname: hive-server2
+    container_name: hive-server2
+    ports:
+      - "10000:10000"
+    networks:
+      - hadoopnet
+    depends_on:
+      # hive-metastore:
+      #   condition: service_healthy
+      worker:
+        condition: service_healthy
 
 networks:
   hadoopnet:
@@ -125,6 +146,4 @@ volumes:
   hdfs-nn2:
   hdfs-nn3:
   hdfs-dn1:
-  # hive-metastore-db:
-  # hive-warehouse:
-  # postgres-data:
+  postgres-data:

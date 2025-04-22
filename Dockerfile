@@ -36,8 +36,8 @@ RUN ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa && \
 
 WORKDIR /home/hadoop
 COPY --chown=hadoop:hadoop hadoop-config/ $HADOOP_HOME/etc/hadoop/
-COPY --chown=hadoop:hadoop zoo.cfg $ZOOKEEPER_HOME/conf/zoo.cfg
-COPY --chown=hadoop:hadoop --chmod=777 start-hadoop.sh /home/hadoop/start-hadoop.sh
+COPY --chown=hadoop:hadoop zoo.cfg $ZOOKEEPER_HOME/conf/
+COPY --chown=hadoop:hadoop --chmod=777 start-hadoop.sh /home/hadoop/
 
 ENTRYPOINT ["bash", "-c", "./start-hadoop.sh"]
 
@@ -46,9 +46,9 @@ FROM hadoop-base as hive-base
 ENV HIVE_HOME=/usr/local/hive
 ENV TEZ_HOME=/usr/local/tez
 ENV PATH=$HIVE_HOME/bin:$TEZ_HOME/bin:$PATH
+ENV HADOOP_CLASSPATH=$HADOOP_HOME/etc/hadoop:$TEZ_HOME/lib/*:$TEZ_HOME/conf:$TEZ_HOME/*
 
 USER root
-
 
 ADD https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz /tmp/
 RUN tar -xzf /tmp/apache-hive-4.0.1-bin.tar.gz -C /usr/local && \
@@ -69,6 +69,7 @@ RUN mv /tmp/postgresql-42.6.0.jar $HIVE_HOME/lib/ && \
 USER hadoop
 WORKDIR /home/hadoop
 COPY --chown=hadoop:hadoop hive-config/hive-site.xml $HIVE_HOME/conf/
-COPY --chown=hadoop:hadoop --chmod=777 start-hive.sh /home/hadoop/start-hive.sh
+COPY --chown=hadoop:hadoop hive-config/tez-site.xml $TEZ_HOME/conf/
+COPY --chown=hadoop:hadoop --chmod=777 start-hive.sh /home/hadoop/
 
 # ENTRYPOINT ["bash", "-c", "./start-hive.sh"]
