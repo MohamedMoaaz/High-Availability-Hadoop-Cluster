@@ -1,20 +1,20 @@
 version: '3.8'
 
 services:
-  hive-postgres:
-    image: postgres:13
-    hostname: hive-postgres
-    container_name: hive-postgres
-    environment:
-      POSTGRES_USER: hiveuser
-      POSTGRES_PASSWORD: hivepassword
-      POSTGRES_DB: metastore
-    networks:
-      - hadoopnet
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+  # hive-postgres:
+  #   image: postgres:13
+  #   hostname: hive-postgres
+  #   container_name: hive-postgres
+  #   environment:
+  #     POSTGRES_USER: hiveuser
+  #     POSTGRES_PASSWORD: hivepassword
+  #     POSTGRES_DB: metastore
+  #   networks:
+  #     - hadoopnet
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
 
   master1:
     build:
@@ -71,25 +71,25 @@ services:
     volumes:
       - hdfs-dn1:/usr/local/hadoop/hdfs/datanode
 
-  hive-metastore:
-    build: .
-    hostname: hive-metastore
-    container_name: hive-metastore
-    depends_on:
-      - hive-postgres
-    networks:
-      - hadoopnet
+  # hive-metastore:
+  #   build: .
+  #   hostname: hive-metastore
+  #   container_name: hive-metastore
+  #   depends_on:
+  #     - hive-postgres
+  #   networks:
+  #     - hadoopnet
 
-  hive-server2:
-    build: .
-    hostname: hive-server2
-    container_name: hive-server2
-    depends_on:
-      - hive-metastore
-    ports:
-      - "10000:10000"
-    networks:
-      - hadoopnet
+  # hive-server2:
+  #   build: .
+  #   hostname: hive-server2
+  #   container_name: hive-server2
+  #   depends_on:
+  #     - hive-metastore
+  #   ports:
+  #     - "10000:10000"
+  #   networks:
+  #     - hadoopnet
 
 networks:
   hadoopnet:
@@ -106,6 +106,6 @@ volumes:
   hdfs-nn2:
   hdfs-nn3:
   hdfs-dn1:
-  hive-metastore-db:
-  hive-warehouse:
-  postgres-data:
+  # hive-metastore-db:
+  # hive-warehouse:
+  # postgres-data:

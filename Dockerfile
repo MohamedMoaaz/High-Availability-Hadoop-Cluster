@@ -76,6 +76,8 @@ COPY hive-site.xml $HIVE_HOME/conf/hive-site.xml
 RUN chmod +x /home/hadoop/start.sh
 RUN chown hadoop:hadoop /home/hadoop/start.sh
 
+ENV ZOOKEEPER_HOME=/usr/local/zookeeper
+ENV PATH=$ZOOKEEPER_HOME/bin:$PATH
 # Entry point to start Hadoop and related services
 USER hadoop
 ENTRYPOINT ["bash", "-c", "./start.sh"]
