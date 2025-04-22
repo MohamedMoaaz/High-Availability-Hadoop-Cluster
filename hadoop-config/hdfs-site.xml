@@ -79,7 +79,7 @@
     <!-- Prevent standby from becoming active in safemode -->
     <property>
         <name>dfs.ha.nn.not-become-active-in-safemode</name>
-        <value>true</value>
+        <value>false</value>
     </property>
 
     <!-- Optional: Enable edit journal resolution -->

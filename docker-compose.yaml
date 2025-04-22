@@ -1,6 +1,80 @@
-version: '3.8'
-
 services:
+  master1:
+    build:
+      context: .
+      target: hadoop-base
+    image: hadoop-base
+    hostname: master1
+    container_name: master1
+    ports:
+      - "8888:8088"
+      - "9878:9870"
+    networks:
+      - hadoopnet
+    volumes:
+      - zk1-data:/usr/local/zookeeper
+      - jk1:/usr/local/hadoop/journal
+      - hdfs-nn1:/usr/local/hadoop/hdfs/namenode
+    healthcheck:
+      test: ["CMD-SHELL", "hdfs haadmin -checkHealth nn1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  master2:
+    image: hadoop-base
+    hostname: master2
+    container_name: master2
+    ports:
+      - "8788:8088"
+      - "9877:9870"
+    networks:
+      - hadoopnet
+    volumes:
+      - zk2-data:/usr/local/zookeeper
+      - jk2:/usr/local/hadoop/journal
+      - hdfs-nn2:/usr/local/hadoop/hdfs/namenode
+    healthcheck:
+      test: ["CMD-SHELL", "hdfs haadmin -checkHealth nn2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  master3:
+    image: hadoop-base
+    hostname: master3
+    container_name: master3
+    ports:
+      - "8688:8088"
+      - "9876:9870"
+    networks:
+      - hadoopnet
+    volumes:
+      - zk3-data:/usr/local/zookeeper
+      - jk3:/usr/local/hadoop/journal
+      - hdfs-nn3:/usr/local/hadoop/hdfs/namenode
+    healthcheck:
+      test: ["CMD-SHELL", "hdfs haadmin -checkHealth nn3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    image: hadoop-base
+    hostname: worker
+    container_name: worker
+    networks:
+      - hadoopnet
+    volumes:
+      - hdfs-dn1:/usr/local/hadoop/hdfs/datanode
+    depends_on:
+      master1:
+        condition: service_healthy
+      master2:
+        condition: service_healthy
+      master3:
+        condition: service_healthy
+
   # hive-postgres:
   #   image: postgres:13
   #   hostname: hive-postgres
@@ -15,61 +89,6 @@ services:
   #     - postgres-data:/var/lib/postgresql/data
   #   ports:
   #     - "5432:5432"
-
-  master1:
-    build:
-      context: .
-    hostname: master1
-    container_name: master1
-    ports:
-      - "8888:8088"    # YARN ResourceManager UI
-      - "9878:9870"    # HDFS NameNode UI
-    networks:
-      - hadoopnet
-    volumes:
-      - zk1-data:/usr/local/zookeeper
-      - jk1:/usr/local/hadoop/journal
-      - hdfs-nn1:/usr/local/hadoop/hdfs/namenode
-
-  master2:
-    build:
-      context: .
-    hostname: master2
-    container_name: master2
-    ports:
-      - "8788:8088"
-      - "9877:9870"
-    networks:
-      - hadoopnet
-    volumes:
-      - zk2-data:/usr/local/zookeeper
-      - jk2:/usr/local/hadoop/journal
-      - hdfs-nn2:/usr/local/hadoop/hdfs/namenode
-
-  master3:
-    build:
-      context: .
-    hostname: master3
-    container_name: master3
-    ports:
-      - "8688:8088"
-      - "9876:9870"
-    networks:
-      - hadoopnet
-    volumes:
-      - zk3-data:/usr/local/zookeeper
-      - jk3:/usr/local/hadoop/journal
-      - hdfs-nn3:/usr/local/hadoop/hdfs/namenode
-
-  worker:
-    build:
-      context: .
-    hostname: worker
-    container_name: worker
-    networks:
-      - hadoopnet
-    volumes:
-      - hdfs-dn1:/usr/local/hadoop/hdfs/datanode
 
   # hive-metastore:
   #   build: .
