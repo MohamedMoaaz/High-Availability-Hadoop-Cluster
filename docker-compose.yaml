@@ -9,6 +9,9 @@ services:
     ports:
       - "8888:8088"
       - "9878:9870"
+    environment:
+      - ROLE=master
+      - MYID=1
     networks:
       - hadoopnet
     volumes:
@@ -28,6 +31,9 @@ services:
     ports:
       - "8788:8088"
       - "9877:9870"
+    environment:
+      - ROLE=master
+      - MYID=2
     networks:
       - hadoopnet
     volumes:
@@ -47,6 +53,9 @@ services:
     ports:
       - "8688:8088"
       - "9876:9870"
+    environment:
+      - ROLE=master
+      - MYID=3
     networks:
       - hadoopnet
     volumes:
@@ -63,6 +72,8 @@ services:
     image: hadoop-base
     hostname: worker
     container_name: worker
+    environment:
+      - ROLE=worker
     networks:
       - hadoopnet
     volumes:
@@ -93,7 +104,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hiveuser"]
+      test: ["CMD-SHELL", "pg_isready -U hiveuser -d metastore"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -105,11 +116,11 @@ services:
     container_name: hive-metastore
     networks:
       - hadoopnet
-    # healthcheck:
-    #   test: ["CMD-SHELL", "nc -z localhost 9083"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "jps | grep -E 'RunJar'"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     depends_on:
       hive-postgres:
         condition: service_healthy
@@ -123,11 +134,12 @@ services:
     container_name: hive-server2
     ports:
       - "10000:10000"
+      - "10002:10002"
     networks:
       - hadoopnet
     depends_on:
-      # hive-metastore:
-      #   condition: service_healthy
+      hive-metastore:
+        condition: service_healthy
       worker:
         condition: service_healthy
 

@@ -1,10 +1,11 @@
 #!/bin/bash
 sudo service ssh start
-if hostname | grep -q "master"; then
+echo "$MYID" > /usr/local/zookeeper/data/myid
+
+if [[ "$ROLE" == "master" ]]; then
   hdfs --daemon start journalnode
-  echo $(hostname | tail -c 2) > /usr/local/zookeeper/data/myid
   zkServer.sh start
-  if [[ $(hostname | tail -c 2) == "1" ]]; then
+  if [[ "$MYID" == "1" ]]; then
     if [ ! -d /usr/local/hadoop/hdfs/namenode/current ]; then
       hdfs namenode -format -force -nonInteractive
       hdfs zkfc -formatZK -force -nonInteractive
@@ -18,7 +19,7 @@ if hostname | grep -q "master"; then
   fi
   hdfs --daemon start zkfc
   yarn --daemon start resourcemanager
-elif [[ $HOSTNAME == "worker" ]]; then 
+elif [[ "$ROLE" == "worker" ]]; then 
   hdfs --daemon start datanode
   yarn --daemon start nodemanager
 fi

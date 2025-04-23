@@ -71,5 +71,6 @@ WORKDIR /home/hadoop
 COPY --chown=hadoop:hadoop hive-config/hive-site.xml $HIVE_HOME/conf/
 COPY --chown=hadoop:hadoop hive-config/tez-site.xml $TEZ_HOME/conf/
 COPY --chown=hadoop:hadoop --chmod=777 start-hive.sh /home/hadoop/
-
-# ENTRYPOINT ["bash", "-c", "./start-hive.sh"]
+ENV HIVE_AUX_JARS_PATH="/usr/local/hadoop/share/hadoop/common/*.jar:/usr/local/hadoop/share/hadoop/hdfs/*.jar"
+#ENV HIVE_AUX_JARS_PATH=/usr/local/hadoop/share/hadoop/common/hadoop-common-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/common/hadoop-common-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-kms-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-nfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-registry-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-client-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-client-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-httpfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-native-client-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-native-client-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-nfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-rbf-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-rbf-3.3.6.jar
+ENTRYPOINT ["bash", "-c", "./start-hive.sh"]
