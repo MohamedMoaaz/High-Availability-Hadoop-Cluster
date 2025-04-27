@@ -43,10 +43,13 @@ ENTRYPOINT ["bash", "-c", "./start-hadoop.sh"]
 
 FROM hadoop-base as hive-base
 
+USER hadoop
+
 ENV HIVE_HOME=/usr/local/hive
 ENV TEZ_HOME=/usr/local/tez
 ENV PATH=$HIVE_HOME/bin:$TEZ_HOME/bin:$PATH
 ENV HADOOP_CLASSPATH=$HADOOP_HOME/etc/hadoop:$TEZ_HOME/lib/*:$TEZ_HOME/conf:$TEZ_HOME/*
+ENV HIVE_AUX_JARS_PATH=/usr/local/hadoop/share/hadoop/common/hadoop-common-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/common/hadoop-common-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-kms-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-nfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-registry-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-client-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-client-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-httpfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-native-client-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-native-client-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-nfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-rbf-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-rbf-3.3.6.jar
 
 USER root
 
@@ -54,7 +57,6 @@ ADD https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz /tmp/
 RUN tar -xzf /tmp/apache-hive-4.0.1-bin.tar.gz -C /usr/local && \
     mv /usr/local/apache-hive-4.0.1-bin $HIVE_HOME && \
     chown -R hadoop:hadoop $HIVE_HOME
-
 
 ADD https://archive.apache.org/dist/tez/0.10.4/apache-tez-0.10.4-bin.tar.gz /tmp/
 RUN tar -xzf /tmp/apache-tez-0.10.4-bin.tar.gz -C /usr/local && \
@@ -71,6 +73,4 @@ WORKDIR /home/hadoop
 COPY --chown=hadoop:hadoop hive-config/hive-site.xml $HIVE_HOME/conf/
 COPY --chown=hadoop:hadoop hive-config/tez-site.xml $TEZ_HOME/conf/
 COPY --chown=hadoop:hadoop --chmod=777 start-hive.sh /home/hadoop/
-ENV HIVE_AUX_JARS_PATH="/usr/local/hadoop/share/hadoop/common/*.jar:/usr/local/hadoop/share/hadoop/hdfs/*.jar"
-#ENV HIVE_AUX_JARS_PATH=/usr/local/hadoop/share/hadoop/common/hadoop-common-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/common/hadoop-common-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-kms-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-nfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/common/hadoop-registry-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-client-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-client-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-httpfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-native-client-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-native-client-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-nfs-3.3.6.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-rbf-3.3.6-tests.jar:/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-rbf-3.3.6.jar
 ENTRYPOINT ["bash", "-c", "./start-hive.sh"]
