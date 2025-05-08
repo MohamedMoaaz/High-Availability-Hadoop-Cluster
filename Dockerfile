@@ -1,7 +1,7 @@
 FROM ubuntu:22.04 AS hadoop-base
 
 RUN apt update -y && apt upgrade -y && \
-    apt install -y openjdk-8-jdk ssh sudo curl wget
+    apt install -y openjdk-8-jdk cron ssh sudo curl wget
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64
 ENV HADOOP_HOME=/usr/local/hadoop
@@ -73,4 +73,5 @@ WORKDIR /home/hadoop
 COPY --chown=hadoop:hadoop hive-config/hive-site.xml $HIVE_HOME/conf/
 COPY --chown=hadoop:hadoop hive-config/tez-site.xml $TEZ_HOME/conf/
 COPY --chown=hadoop:hadoop --chmod=777 start-hive.sh /home/hadoop/
+COPY --chown=hadoop:hadoop --chmod=777 test.sql /app/
 ENTRYPOINT ["bash", "-c", "./start-hive.sh"]

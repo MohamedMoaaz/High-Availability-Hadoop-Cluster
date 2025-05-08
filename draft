@@ -1,9 +1,0 @@
-# docker run -it \
-#   --hostname worker2 \
-#   --name worker2 \
-#   --network hadoop-project_hadoopnet \
-#   -v hadoop-project_hdfs-dn2:/usr/local/hadoop/hdfs/datanode \
-# hadoop-project-worker
-
-# docker build -f Dockerfile.hadoop -t hadoop-base .
-# docker build -f Dockerfile.hive -t hive-node .

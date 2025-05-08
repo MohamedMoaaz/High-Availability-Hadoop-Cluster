@@ -19,5 +19,11 @@ fi
 
 if [[ "$HOSTNAME" == "hive-server2" ]]; then
   hive --service hiveserver2 &
+  mkdir /app
+  sudo service cron start
+  echo export PATH=/usr/local/hive/bin:/usr/local/hadoop/bin:/usr/bin:/bin >> /app/hive_cron.sh
+  echo "beeline -u jdbc:hive2://localhost:10000 -n hive -p hive -f /app/test.sql >> /app/hive_cron.log 2>&1" >> /app/hive_cron.sh
+  chmod +x /app/hive_cron.sh 
+  echo "* * * * * /app/hive_cron.sh" | crontab -
 fi
 tail -f /dev/null
